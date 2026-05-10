@@ -7,11 +7,24 @@ A simple URL shortening application built with Node.js, Express, MongoDB, and Mo
 - **AI-Powered Insights**: Automatically generates a catchy **Title** and a **1-sentence Summary** for every shortened URL using the **Gemini AI API**.
 - **Website Crawling**: Uses `axios` to fetch metadata from the target URL to provide context to the AI.
 - **User Authentication**: Secure Signup and Login using JWT (JSON Web Tokens).
-- **Password Security**: Passwords are hashed using `bcryptjs` before storage.
+- **Seamless Flow**: Automatically logs users in immediately after a successful signup.
+- **Global Auth Middleware**: Robust session management using a global `checkAuth` middleware.
+- **Improved UI/UX**:
+    - Real-time error feedback on Login and Signup pages.
+    - Secure password masking (using `type="password"`).
+    - Responsive EJS templates.
+- **Password Security**: Passwords are hashed using `bcryptjs` before storage with modern Mongoose async hooks.
 - **Protected Routes**: Short URL generation and analytics are restricted to logged-in users.
 - **URL Shortening**: Create shortened URLs from long URLs.
 - **Analytics**: Track click analytics and visit history.
 - **Redirection**: Automatic redirect to original URL on access.
+
+## Recent Improvements & Fixes
+
+- **Mongoose Hook Fix**: Refactored the User model pre-save hook to use modern async/await patterns, resolving `next is not a function` errors.
+- **Global Auth state**: Implemented `checkAuth` as a global middleware to ensure consistent user state across all public and private routes.
+- **Error Handling**: Added server-side validation and error passing to EJS views to handle duplicate email registrations and invalid credentials gracefully.
+- **Security**: Upgraded password input fields from plain text to masked fields and synchronized bcrypt salt rounds for consistent hashing.
 
 ## Tech Stack
 
