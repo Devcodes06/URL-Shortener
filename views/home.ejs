@@ -5,10 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
+<style>
+    body {
+        background-color: rgb(84, 255, 5);
+        font-family: 'Times New Roman', Times, serif;
+        margin: 20px;
+    }
+</style>
 <body>
     <h1>URL Shortener</h1>
-    <% urls.forEach(url => { %>
-        <li><%= url.shortId %></li>
-    <% }); %>
+    <% if(locals.id) { %>
+        <a href="http://localhost:8001/<%= id %>">
+             http://localhost:8001/<%= id %>
+         </a>
+    <% } %>
+    <div>
+        <form method ="POST" action="/url">
+            <input type="text" name="url" placeholder="Enter long URL" required>
+            <button type="submit">Shorten</button>
+        </form>
+    </div>
+    <div>
+        <% if (locals.urls) { %>
+            <table border="1" cellpadding="10">
+                <thead>
+                   <th>S. No.</th>
+                   <th>ShortID</th>
+                   <th>Title</th>
+                   <th>Summary</th>
+                   <th>Redirect URL</th>
+                   <th>Clicks</th>
+                </thead>
+                <tbody>
+                    <% urls.forEach((url, index) => { %>
+                        <tr>
+                            <td><%= index + 1 %></td>
+                            <td><a href="http://localhost:8001/<%= url.shortId %>">http://localhost:8001/<%= url.shortId %></a></td>
+                            <td><strong><%= url.title || 'N/A' %></strong></td>
+                            <td><%= url.summary || 'N/A' %></td>
+                            <td><%= url.redirectUrl %></td>
+                            <td><%= url.visitHistory.length %></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+          <% } %> 
+    </div>
 </body>
 </html>

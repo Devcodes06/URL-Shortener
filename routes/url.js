@@ -1,10 +1,13 @@
-const express = require ("express")
-const router = express.Router()
-const URL = require("../models/url")    
-const { handleGenerateShortURL, handleGetAnalytics } = require("../controllers/url")
+const express = require("express");
+const router = express.Router();
+const {
+  handleGenerateShortURL,
+  handleGetAnalytics,
+} = require("../controllers/url");
+const { restrictToLoggedinUserOnly } = require("../middlewares/auth");
 
-router.post("/url",handleGenerateShortURL)
+router.post("/", restrictToLoggedinUserOnly, handleGenerateShortURL);
 
-router.get("/analytics/:shortId", handleGetAnalytics)
+router.get("/analytics/:shortId", restrictToLoggedinUserOnly, handleGetAnalytics);
 
-module.exports = router
+module.exports = router;

@@ -1,20 +1,27 @@
 # URL-Shortener
 
-A simple URL shortening application built with Node.js, Express, MongoDB, and Mongoose.
+A simple URL shortening application built with Node.js, Express, MongoDB, and Mongoose, now powered by AI.
 
 ## Features
 
-- Create shortened URLs from long URLs
-- Track click analytics and visit history
-- Automatic redirect to original URL on access
+- **AI-Powered Insights**: Automatically generates a catchy **Title** and a **1-sentence Summary** for every shortened URL using the **Gemini AI API**.
+- **Website Crawling**: Uses `axios` to fetch metadata from the target URL to provide context to the AI.
+- **User Authentication**: Secure Signup and Login using JWT (JSON Web Tokens).
+- **Password Security**: Passwords are hashed using `bcryptjs` before storage.
+- **Protected Routes**: Short URL generation and analytics are restricted to logged-in users.
+- **URL Shortening**: Create shortened URLs from long URLs.
+- **Analytics**: Track click analytics and visit history.
+- **Redirection**: Automatic redirect to original URL on access.
 
 ## Tech Stack
 
+- **AI Engine:** Google Gemini API (`@google/generative-ai`)
 - **Runtime:** Node.js
 - **Web Framework:** Express 5.x
 - **Template Engine:** EJS
 - **Database:** MongoDB with Mongoose ODM
-- **Development:** nodemon for auto-restart
+- **Security:** `bcryptjs` for hashing, `jsonwebtoken` for auth.
+- **Utilities:** `axios` for web fetching, `shortid` for ID generation, `dotenv` for environment management.
 
 ## Installation
 
@@ -22,76 +29,48 @@ A simple URL shortening application built with Node.js, Express, MongoDB, and Mo
 # Install dependencies
 npm install
 
+# Set up environment variables
+cp .env.example .env
+# Edit .env and add your GEMINI_API_KEY from https://aistudio.google.com/
+
 # Start the development server
 npm start
 ```
 
 The server will run on `http://localhost:8001`
 
-## API Endpoints
+## API & Authentication
 
-### Create Short URL
-```bash
-POST /url
-Content-Type: application/json
+### Authentication Endpoints
+- `POST /user/signup`: Create a new account.
+- `POST /user/login`: Authenticate and receive a session cookie.
 
-{
-  "url": "https://example.com/very/long/path"
-}
-```
-
-**Response:**
-```json
-{
-  "shortURL": "http://localhost:8001/abc123"
-}
-```
-
-### Get Analytics
-```bash
-GET /analytics/:shortId
-```
-
-**Response:**
-```json
-{
-  "totalClicks": 5,
-  "analytics": [
-    {"timestamp": 1711697600000},
-    {"timestamp": 1711697700000}
-  ]
-}
-```
-
-### Redirect (Automatic)
-```bash
-GET /:shortId
-```
-Redirects to the original URL and logs the visit.
-
-## Database Schema
-
-The `URL` model stores:
-- `shortId`: Unique identifier for the shortened URL
-- `redirectUrl`: The original long URL
-- `totalClicks`: Total number of clicks (calculated from visit history)
-- `visitHistory`: Array of visit timestamps
+### URL Endpoints (Require Authentication)
+- `POST /url`: Generate a shortened URL with AI-generated title and summary.
+- `GET /url/analytics/:shortId`: View click history.
 
 ## Project Structure
 
 ```
 .
-├── index.js          # Main application file
+├── index.js          # Main application entry point (loads dotenv)
 ├── connect.js        # MongoDB connection utility
 ├── controllers/
-│   └── url.js        # Route controllers
+│   ├── url.js        # URL business logic + Gemini AI Integration
+│   └── user.js       # Authentication logic (Signup/Login)
+├── middlewares/
+│   └── auth.js       # JWT & Route protection middleware
 ├── models/
-│   └── url.js        # MongoDB schema
+│   ├── url.js        # URL Schema (includes title & summary)
+│   └── user.js       # User Schema with Bcrypt pre-save hook
 ├── routes/
-│   ├── url.js        # URL API routes
-│   └── staticRouter.js
-├── views/
-│   └── home.ejs      # EJS template
+│   ├── url.js        # Protected URL routes
+│   ├── user.js       # Auth routes
+│   └── staticRouter.js # View routes (handles query params for UI)
+├── service/
+│   └── auth.js       # JWT Sign/Verify service
+├── views/            # EJS templates with Title/Summary display
+├── .env.example      # Environment variable template
 ├── package.json
 └── README.md
 ```
