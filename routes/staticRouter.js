@@ -4,9 +4,13 @@ const URL = require("../models/url")
 const router = express.Router()
 
 router.get("/", async (req, res) => {
-  if (!req.user) return res.redirect("/login");
+  if (!req.user) return res.render("landing");
   const allUrls = await URL.find({ createdBy: req.user._id });
-  res.render("home", { id: req.query.id || null, urls: allUrls });
+  res.render("home", { 
+    id: req.query.id || null, 
+    urls: allUrls,
+    user: req.user 
+  });
 });
 
 router.get("/signup", (req, res) => {

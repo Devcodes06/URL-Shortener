@@ -10,10 +10,6 @@ const urlSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    totalCLicks: {
-      type: Number,
-      default: 0,
-    },
     visitHistory: [{ timestamp: { type: Number } }],
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

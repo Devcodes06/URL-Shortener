@@ -1,56 +1,1079 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-
-<style>
-    body {
-        background-color: rgb(84, 255, 5);
-        font-family: 'Times New Roman', Times, serif;
-        margin: 20px;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — Snip</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    :root {
+      --bg: #080c14;
+      --surface: #0e1420;
+      --surface-2: #141c2e;
+      --surface-3: #1a2336;
+      --border: rgba(255,255,255,0.07);
+      --border-light: rgba(255,255,255,0.04);
+      --accent: #00e5ff;
+      --accent-dim: rgba(0,229,255,0.10);
+      --accent-glow: rgba(0,229,255,0.3);
+      --text: #e8edf5;
+      --muted: #5a6a82;
+      --muted-2: #3a4a60;
+      --danger: #ff4d6d;
+      --success: #00e5a0;
+      --success-dim: rgba(0,229,160,0.1);
+      --sidebar-w: 240px;
     }
-</style>
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
+
+    h1, h2, h3, h4, h5, .brand { font-family: 'Syne', sans-serif; }
+
+    code, .mono { font-family: 'JetBrains Mono', monospace; }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      width: var(--sidebar-w);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 1.5rem 1rem;
+      z-index: 200;
+      transition: transform 0.3s;
+    }
+
+    .brand {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      padding: 0 0.5rem;
+      margin-bottom: 2rem;
+    }
+    .brand span { color: var(--accent); }
+
+    .nav-section-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted-2);
+      padding: 0 0.75rem;
+      margin-bottom: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.65rem 0.75rem;
+      border-radius: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: background 0.2s, color 0.2s;
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item:hover { background: var(--surface-2); color: var(--text); }
+    .nav-item.active { background: var(--accent-dim); color: var(--accent); }
+    .nav-item i { font-size: 1rem; width: 18px; }
+
+    .sidebar-footer {
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+    }
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.65rem 0.75rem;
+      border-radius: 8px;
+    }
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      border: 1px solid rgba(0,229,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .user-info { flex: 1; overflow: hidden; }
+    .user-name { font-size: 0.85rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-role { font-size: 0.72rem; color: var(--muted); }
+
+    /* ─── MAIN CONTENT ─── */
+    .main {
+      margin-left: var(--sidebar-w);
+      min-height: 100vh;
+      padding: 2rem;
+      max-width: 1100px;
+    }
+
+    /* ─── TOPBAR ─── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+    .topbar h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .topbar .date-tag {
+      font-size: 0.8rem;
+      color: var(--muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.35rem 0.8rem;
+    }
+
+    /* ─── STATS ROW ─── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .stat-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(0,229,255,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .stat-label { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-value { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+
+    /* ─── SHORTEN CARD ─── */
+    .shorten-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .shorten-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+    .shorten-card h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .shorten-card h2 i { color: var(--accent); }
+    .shorten-card .hint {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .url-form {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .url-input-wrap {
+      flex: 1;
+      position: relative;
+    }
+    .url-input-wrap i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+    }
+    .url-input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      padding: 0.75rem 1rem 0.75rem 2.6rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .url-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0,229,255,0.1);
+    }
+    .url-input::placeholder { color: var(--muted); }
+
+    .btn-shorten {
+      background: var(--accent);
+      color: #080c14;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: box-shadow 0.2s, transform 0.15s;
+      flex-shrink: 0;
+    }
+    .btn-shorten:hover {
+      box-shadow: 0 0 20px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+    .btn-shorten:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* New link success banner */
+    .new-link-banner {
+      margin-top: 1rem;
+      background: var(--success-dim);
+      border: 1px solid rgba(0,229,160,0.25);
+      border-radius: 8px;
+      padding: 0.85rem 1.1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      animation: fadeIn 0.4s ease;
+    }
+    .new-link-info { display: flex; align-items: center; gap: 0.7rem; }
+    .new-link-info i { color: var(--success); font-size: 1.1rem; }
+    .new-link-text .label { font-size: 0.75rem; color: var(--muted); }
+    .new-link-text .url { font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; color: var(--success); font-weight: 500; }
+    .btn-copy {
+      background: rgba(0,229,160,0.15);
+      border: 1px solid rgba(0,229,160,0.25);
+      color: var(--success);
+      padding: 0.4rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .btn-copy:hover { background: rgba(0,229,160,0.25); }
+
+    /* Loading state */
+    .ai-loading {
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .spinner {
+      width: 16px; height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── LINKS TABLE ─── */
+    .links-section h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .links-section h3 .count {
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-size: 0.75rem;
+      padding: 0.15rem 0.5rem;
+      border-radius: 999px;
+      font-family: 'Syne', sans-serif;
+    }
+
+    .link-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem 1.25rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      transition: border-color 0.2s, transform 0.2s;
+      animation: fadeIn 0.4s ease both;
+    }
+    .link-card:hover {
+      border-color: rgba(0,229,255,0.2);
+      transform: translateX(2px);
+    }
+
+    .link-favicon {
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .link-meta { flex: 1; min-width: 0; }
+    .link-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 0.15rem;
+    }
+    .link-summary {
+      font-size: 0.78rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 0.3rem;
+    }
+    .link-url-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .short-url-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid rgba(0,229,255,0.15);
+      border-radius: 4px;
+      padding: 0.15rem 0.5rem;
+    }
+    .orig-url {
+      font-size: 0.75rem;
+      color: var(--muted-2);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 260px;
+    }
+
+    .link-stats {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.3rem;
+      flex-shrink: 0;
+    }
+    .clicks-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-family: 'Syne', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .clicks-badge i { color: var(--accent); font-size: 0.8rem; }
+    .clicks-label { font-size: 0.72rem; color: var(--muted); font-family: 'DM Sans', sans-serif; font-weight: 400; }
+
+    .link-actions {
+      display: flex;
+      gap: 0.4rem;
+      flex-shrink: 0;
+    }
+    .action-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+      text-decoration: none;
+    }
+    .action-btn:hover { background: var(--accent-dim); color: var(--accent); border-color: rgba(0,229,255,0.2); }
+    .action-btn.copy-action.copied { background: var(--success-dim); color: var(--success); border-color: rgba(0,229,160,0.2); }
+
+    /* ─── EMPTY STATE ─── */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--muted);
+    }
+    .empty-state i { font-size: 3rem; margin-bottom: 1rem; display: block; opacity: 0.4; }
+    .empty-state h4 { font-family: 'Syne', sans-serif; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+    .empty-state p { font-size: 0.88rem; max-width: 300px; margin: 0 auto; }
+
+    /* ─── ANALYTICS MODAL ─── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(8,12,20,0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.show { display: flex; }
+
+    .modal-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 580px;
+      max-height: 85vh;
+      overflow-y: auto;
+      position: relative;
+      animation: scaleIn 0.25s ease;
+    }
+    .modal-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 15%; right: 15%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    .modal-header {
+      padding: 1.5rem 1.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .modal-header h4 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+    }
+    .modal-header .modal-subtitle { font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; }
+    .close-modal {
+      width: 30px; height: 30px;
+      border-radius: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+    .close-modal:hover { color: var(--text); }
+
+    .modal-body { padding: 1.5rem 1.75rem; }
+
+    .analytics-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .a-stat {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+    }
+    .a-stat-value { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; color: var(--accent); }
+    .a-stat-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    .timeline-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.75rem;
+    }
+    .timeline-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 0.85rem;
+    }
+    .timeline-item:last-child { border-bottom: none; }
+    .timeline-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+    .timeline-time { color: var(--muted); }
+    .timeline-relative { color: var(--text); margin-left: auto; font-size: 0.78rem; }
+
+    .modal-info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .info-label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; min-width: 70px; padding-top: 0.15rem; }
+    .info-value { font-size: 0.85rem; color: var(--text); word-break: break-all; }
+    .info-value.mono { font-family: 'JetBrains Mono', monospace; color: var(--accent); }
+
+    /* ─── LOGOUT ─── */
+    .btn-logout {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
+      transition: background 0.2s, color 0.2s;
+      width: 100%;
+    }
+    .btn-logout:hover { background: rgba(255,77,109,0.1); color: var(--danger); }
+
+    /* ─── MOBILE TOGGLE ─── */
+    .mobile-toggle {
+      display: none;
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 300;
+      width: 36px;
+      height: 36px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text);
+    }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 150;
+    }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.show { display: block; }
+      .mobile-toggle { display: flex; }
+      .main { margin-left: 0; padding: 1rem; padding-top: 4rem; }
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .url-form { flex-direction: column; }
+      .btn-shorten { width: 100%; justify-content: center; }
+      .link-card { flex-wrap: wrap; }
+      .link-stats { flex-direction: row; }
+    }
+    @media (max-width: 480px) {
+      .stats-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
 <body>
-    <h1>URL Shortener</h1>
-    <% if(locals.id) { %>
-        <a href="http://localhost:8001/<%= id %>">
-             http://localhost:8001/<%= id %>
-         </a>
+
+<!-- Mobile toggle -->
+<button class="mobile-toggle" onclick="toggleSidebar()">
+  <i class="bi bi-list"></i>
+</button>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<!-- ─── SIDEBAR ─── -->
+<aside class="sidebar" id="sidebar">
+  <div class="brand">Sn<span>i</span>p</div>
+
+  <div class="nav-section-label">Menu</div>
+  <a class="nav-item active" href="/">
+    <i class="bi bi-grid-1x2"></i> Dashboard
+  </a>
+  <a class="nav-item" href="#" onclick="scrollToShorten(event)">
+    <i class="bi bi-scissors"></i> Shorten URL
+  </a>
+  <a class="nav-item" href="#" onclick="scrollToLinks(event)">
+    <i class="bi bi-link-45deg"></i> My Links
+  </a>
+
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="avatar" id="userAvatar">U</div>
+      <div class="user-info">
+        <div class="user-name" id="userName">Loading...</div>
+        <div class="user-role">Free Plan</div>
+      </div>
+    </div>
+    <form action="/user/logout" method="POST" style="margin-top: 0.5rem;">
+      <button type="submit" class="btn-logout">
+        <i class="bi bi-box-arrow-left"></i> Sign Out
+      </button>
+    </form>
+  </div>
+</aside>
+
+<!-- ─── MAIN ─── -->
+<main class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div>
+      <h1>Dashboard</h1>
+      <div style="font-size: 0.82rem; color: var(--muted); margin-top: 0.2rem;">Manage and track your smart links</div>
+    </div>
+    <div class="date-tag" id="currentDate"></div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row" id="statsRow">
+    <div class="stat-card">
+      <div class="stat-icon"><i class="bi bi-link-45deg"></i></div>
+      <div>
+        <div class="stat-label">Total Links</div>
+        <div class="stat-value" id="totalLinks">—</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="bi bi-cursor"></i></div>
+      <div>
+        <div class="stat-label">Total Clicks</div>
+        <div class="stat-value" id="totalClicks">—</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon"><i class="bi bi-fire"></i></div>
+      <div>
+        <div class="stat-label">Top Link Clicks</div>
+        <div class="stat-value" id="topClicks">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shorten Card -->
+  <div class="shorten-card" id="shortenSection">
+    <h2><i class="bi bi-scissors"></i> Shorten a URL</h2>
+    <p class="hint">Paste any long URL. Snip will use AI to generate a title and summary automatically.</p>
+
+    <form class="url-form" action="/url" method="POST" id="shortenForm" onsubmit="handleSubmit(event)">
+      <div class="url-input-wrap">
+        <i class="bi bi-link-45deg"></i>
+        <input
+          type="url"
+          name="url"
+          class="url-input"
+          placeholder="https://your-long-url.com/goes/here"
+          required
+          id="urlInput"
+        >
+      </div>
+      <button type="submit" class="btn-shorten" id="shortenBtn">
+        <i class="bi bi-scissors"></i> Snip it
+      </button>
+    </form>
+
+    <!-- AI Loading indicator (shown while form submits) -->
+    <div class="ai-loading" id="aiLoading" style="display: none;">
+      <div class="spinner"></div>
+      <span>AI is analyzing your page and generating metadata...</span>
+    </div>
+
+    <!-- New link success (shown after redirect back with id) -->
+    <% if (typeof id !== 'undefined' && id) { %>
+    <div class="new-link-banner">
+      <div class="new-link-info">
+        <i class="bi bi-check-circle-fill"></i>
+        <div class="new-link-text">
+          <div class="label">Your Snip link is ready</div>
+          <div class="url" id="newLinkUrl">snip.ly/<%= id %></div>
+        </div>
+      </div>
+      <button class="btn-copy" onclick="copyNewLink('<%= id %>', this)">
+        <i class="bi bi-copy"></i> Copy
+      </button>
+    </div>
     <% } %>
-    <div>
-        <form method ="POST" action="/url">
-            <input type="text" name="url" placeholder="Enter long URL" required>
-            <button type="submit">Shorten</button>
-        </form>
+  </div>
+
+  <!-- Links List -->
+  <div class="links-section" id="linksSection">
+    <h3>
+      <i class="bi bi-collection" style="color: var(--accent);"></i>
+      My Links
+      <span class="count"><%= urls ? urls.length : 0 %></span>
+    </h3>
+
+    <% if (!urls || urls.length === 0) { %>
+    <div class="empty-state">
+      <i class="bi bi-scissors"></i>
+      <h4>No links yet</h4>
+      <p>Paste a URL above to create your first Snip link and start tracking clicks.</p>
     </div>
-    <div>
-        <% if (locals.urls) { %>
-            <table border="1" cellpadding="10">
-                <thead>
-                   <th>S. No.</th>
-                   <th>ShortID</th>
-                   <th>Title</th>
-                   <th>Summary</th>
-                   <th>Redirect URL</th>
-                   <th>Clicks</th>
-                </thead>
-                <tbody>
-                    <% urls.forEach((url, index) => { %>
-                        <tr>
-                            <td><%= index + 1 %></td>
-                            <td><a href="http://localhost:8001/<%= url.shortId %>">http://localhost:8001/<%= url.shortId %></a></td>
-                            <td><strong><%= url.title || 'N/A' %></strong></td>
-                            <td><%= url.summary || 'N/A' %></td>
-                            <td><%= url.redirectUrl %></td>
-                            <td><%= url.visitHistory.length %></td>
-                        </tr>
-                    <% }); %>
-                </tbody>
-            </table>
-          <% } %> 
+    <% } else { %>
+
+    <% urls.forEach(function(url, index) { %>
+    <div class="link-card" style="animation-delay: <%= index * 0.05 %>s">
+      <div class="link-favicon">
+        <i class="bi bi-globe2"></i>
+      </div>
+
+      <div class="link-meta">
+        <div class="link-title"><%= url.title || 'Untitled Link' %></div>
+        <div class="link-summary"><%= url.summary || 'No summary available.' %></div>
+        <div class="link-url-row">
+          <span class="short-url-badge">/<%= url.shortId %></span>
+          <span class="orig-url" title="<%= url.redirectUrl %>"><%= url.redirectUrl %></span>
+        </div>
+      </div>
+
+      <div class="link-stats">
+        <div class="clicks-badge">
+          <i class="bi bi-cursor-fill"></i>
+          <%= url.visitHistory ? url.visitHistory.length : 0 %>
+        </div>
+        <div class="clicks-label">clicks</div>
+      </div>
+
+      <div class="link-actions">
+        <button
+          class="action-btn copy-action"
+          onclick="copyLink('<%= url.shortId %>', this)"
+          title="Copy short URL"
+        >
+          <i class="bi bi-copy"></i>
+        </button>
+        <a
+          href="<%= url.redirectUrl %>"
+          target="_blank"
+          rel="noopener"
+          class="action-btn"
+          title="Open original URL"
+        >
+          <i class="bi bi-box-arrow-up-right"></i>
+        </a>
+        <button
+          class="action-btn"
+          onclick="openAnalytics('<%= url.shortId %>', '<%= url.title || 'Untitled' %>', '<%= url.redirectUrl %>')"
+          title="View analytics"
+        >
+          <i class="bi bi-graph-up"></i>
+        </button>
+        <button
+          class="action-btn"
+          onclick="deleteLink('<%= url.shortId %>', this)"
+          title="Delete link"
+          style="color: var(--danger);"
+        >
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
     </div>
+    <% }) %>
+
+    <% } %>
+  </div>
+
+</main>
+
+<!-- ─── ANALYTICS MODAL ─── -->
+<div class="modal-overlay" id="analyticsModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div>
+        <h4 id="modalTitle">Link Analytics</h4>
+        <div class="modal-subtitle" id="modalSubtitle"></div>
+      </div>
+      <button class="close-modal" onclick="closeModal()"><i class="bi bi-x"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-info-row">
+        <span class="info-label">Short URL</span>
+        <span class="info-value mono" id="modalShortUrl"></span>
+      </div>
+      <div class="modal-info-row">
+        <span class="info-label">Destination</span>
+        <span class="info-value" id="modalDest" style="font-size: 0.8rem; color: var(--muted);"></span>
+      </div>
+
+      <div class="analytics-stat-grid" id="analyticsStatGrid">
+        <div class="a-stat">
+          <div class="a-stat-value" id="modalTotalClicks">—</div>
+          <div class="a-stat-label">Total Clicks</div>
+        </div>
+        <div class="a-stat">
+          <div class="a-stat-value" id="modalLastClick">—</div>
+          <div class="a-stat-label">Last Clicked</div>
+        </div>
+      </div>
+
+      <div class="timeline-label">Click History</div>
+      <div id="clickTimeline">
+        <div style="color: var(--muted); font-size: 0.85rem; text-align: center; padding: 1rem;">Loading...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // ─── DATE ───
+  document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-US', {
+    weekday: 'short', year: 'numeric', month: 'short', day: 'numeric'
+  });
+
+  // ─── STATS ───
+  const urls = <%- JSON.stringify(urls || []) %>;
+  document.getElementById('totalLinks').textContent = urls.length;
+  const totalClicks = urls.reduce((s, u) => s + (u.visitHistory ? u.visitHistory.length : 0), 0);
+  document.getElementById('totalClicks').textContent = totalClicks;
+  const topClicks = urls.reduce((m, u) => Math.max(m, u.visitHistory ? u.visitHistory.length : 0), 0);
+  document.getElementById('topClicks').textContent = topClicks;
+
+  // ─── USER AVATAR ───
+  // (Backend should pass user info; fallback to URL data)
+  const avatar = document.getElementById('userAvatar');
+  const userName = document.getElementById('userName');
+  // If you pass user name from backend: <%= typeof user !== 'undefined' ? user.name : '' %>
+  const name = '<%= typeof user !== "undefined" && user ? user.name : "" %>';
+  if (name) {
+    avatar.textContent = name.charAt(0).toUpperCase();
+    userName.textContent = name;
+  }
+
+  // ─── FORM HANDLING ───
+  function handleSubmit(e) {
+    const input = document.getElementById('urlInput');
+    if (!input.value.trim()) return;
+    document.getElementById('shortenBtn').disabled = true;
+    document.getElementById('aiLoading').style.display = 'flex';
+  }
+
+  // ─── COPY HELPERS ───
+  function copyLink(shortId, btn) {
+    const url = `${window.location.origin}/${shortId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      btn.classList.add('copied');
+      btn.innerHTML = '<i class="bi bi-check2"></i>';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = '<i class="bi bi-copy"></i>';
+      }, 2000);
+    });
+  }
+
+  function copyNewLink(shortId, btn) {
+    const url = `${window.location.origin}/${shortId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      btn.innerHTML = '<i class="bi bi-check2"></i> Copied!';
+      setTimeout(() => { btn.innerHTML = '<i class="bi bi-copy"></i> Copy'; }, 2000);
+    });
+  }
+
+  // ─── ANALYTICS MODAL ───
+  async function openAnalytics(shortId, title, dest) {
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalSubtitle').textContent = `/${shortId}`;
+    document.getElementById('modalShortUrl').textContent = `${window.location.origin}/${shortId}`;
+    document.getElementById('modalDest').textContent = dest;
+    document.getElementById('modalTotalClicks').textContent = '—';
+    document.getElementById('modalLastClick').textContent = '—';
+    document.getElementById('clickTimeline').innerHTML = '<div style="color: var(--muted); font-size: 0.85rem; text-align: center; padding: 1rem;">Loading...</div>';
+    document.getElementById('analyticsModal').classList.add('show');
+
+    try {
+      const res = await fetch(`/url/analytics/${shortId}`);
+      const data = await res.json();
+      const clicks = data.totalClicks || 0;
+      const history = data.analytics || [];
+
+      document.getElementById('modalTotalClicks').textContent = clicks;
+
+      if (history.length > 0) {
+        const last = new Date(history[history.length - 1].timestamp);
+        document.getElementById('modalLastClick').textContent = last.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      } else {
+        document.getElementById('modalLastClick').textContent = 'Never';
+      }
+
+      if (history.length === 0) {
+        document.getElementById('clickTimeline').innerHTML = '<div style="color: var(--muted); font-size: 0.85rem; text-align: center; padding: 1.5rem;">No clicks recorded yet.</div>';
+      } else {
+        const items = [...history].reverse().slice(0, 20).map(entry => {
+          const d = new Date(entry.timestamp);
+          const relative = timeAgo(d);
+          return `<div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <span class="timeline-time">${d.toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+            <span class="timeline-relative">${relative}</span>
+          </div>`;
+        }).join('');
+        document.getElementById('clickTimeline').innerHTML = items;
+      }
+    } catch (err) {
+      document.getElementById('clickTimeline').innerHTML = '<div style="color: var(--danger); font-size: 0.85rem; text-align: center; padding: 1rem;">Failed to load analytics.</div>';
+    }
+  }
+
+  function closeModal() {
+    document.getElementById('analyticsModal').classList.remove('show');
+  }
+  document.getElementById('analyticsModal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // ─── TIME AGO ───
+  function timeAgo(date) {
+    const diff = Date.now() - date.getTime();
+    const m = Math.floor(diff / 60000);
+    if (m < 1) return 'just now';
+    if (m < 60) return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h}h ago`;
+    const d = Math.floor(h / 24);
+    return `${d}d ago`;
+  }
+
+  // ─── SCROLL HELPERS ───
+  function scrollToShorten(e) {
+    e.preventDefault();
+    document.getElementById('shortenSection').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('urlInput').focus();
+  }
+  function scrollToLinks(e) {
+    e.preventDefault();
+    document.getElementById('linksSection').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // ─── MOBILE SIDEBAR ───
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('open');
+    document.getElementById('sidebarOverlay').classList.toggle('show');
+  }
+
+  // ─── DELETE LINK ───
+  async function deleteLink(shortId, btn) {
+    if (!confirm('Are you sure you want to delete this link?')) return;
+
+    const card = btn.closest('.link-card');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"></div>';
+
+    try {
+      const res = await fetch(`/url/${shortId}`, { method: 'DELETE' });
+      if (res.ok) {
+        card.style.opacity = '0';
+        card.style.transform = 'translateX(20px)';
+        setTimeout(() => {
+          card.remove();
+          // Update count
+          const countBadge = document.querySelector('.links-section h3 .count');
+          const currentCount = parseInt(countBadge.textContent);
+          countBadge.textContent = currentCount - 1;
+
+          // If no links left, show empty state
+          if (currentCount - 1 === 0) {
+            location.reload(); // Simplest way to show empty state
+          }
+        }, 400);
+      } else {
+        alert('Failed to delete link');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-trash"></i>';
+      }
+    } catch (err) {
+      alert('An error occurred');
+      btn.disabled = false;
+      btn.innerHTML = '<i class="bi bi-trash"></i>';
+    }
+  }
+
+  // ─── KEYBOARD SHORTCUT: ESC closes modal ───
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
 </body>
 </html>

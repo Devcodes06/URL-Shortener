@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Snip — Links, Refined.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <style>
+    :root {
+      --bg: #080c14;
+      --surface: #0e1420;
+      --surface-2: #141c2e;
+      --border: rgba(255,255,255,0.07);
+      --accent: #00e5ff;
+      --accent-dim: rgba(0,229,255,0.12);
+      --accent-glow: rgba(0,229,255,0.3);
+      --text: #e8edf5;
+      --muted: #5a6a82;
+      --danger: #ff4d6d;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, h4, .brand {
+      font-family: 'Syne', sans-serif;
+    }
+
+    /* ─── BACKGROUND GRID ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(8,12,20,0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+    .brand span { color: var(--accent); }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      margin-left: 2rem;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    .btn-nav {
+      background: var(--accent);
+      color: #080c14;
+      border: none;
+      padding: 0.5rem 1.4rem;
+      border-radius: 6px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.02em;
+      text-decoration: none;
+      margin-left: 2rem;
+      transition: box-shadow 0.2s, transform 0.15s;
+    }
+    .btn-nav:hover {
+      box-shadow: 0 0 20px var(--accent-glow);
+      transform: translateY(-1px);
+      color: #080c14;
+    }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 1.5rem 4rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: var(--accent-dim);
+      border: 1px solid rgba(0,229,255,0.2);
+      color: var(--accent);
+      padding: 0.35rem 1rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+      animation: fadeDown 0.6s ease both;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      margin-bottom: 1.5rem;
+      animation: fadeDown 0.6s 0.1s ease both;
+    }
+
+    .hero h1 .highlight {
+      color: var(--accent);
+      position: relative;
+      display: inline-block;
+    }
+
+    .hero p {
+      max-width: 540px;
+      color: var(--muted);
+      font-size: 1.1rem;
+      line-height: 1.7;
+      margin: 0 auto 2.5rem;
+      animation: fadeDown 0.6s 0.2s ease both;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: fadeDown 0.6s 0.3s ease both;
+    }
+
+    .btn-primary-custom {
+      background: var(--accent);
+      color: #080c14;
+      border: none;
+      padding: 0.85rem 2rem;
+      border-radius: 8px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: box-shadow 0.25s, transform 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-primary-custom:hover {
+      box-shadow: 0 0 30px var(--accent-glow);
+      transform: translateY(-2px);
+      color: #080c14;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 0.85rem 2rem;
+      border-radius: 8px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: border-color 0.2s, background 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+      color: var(--text);
+    }
+
+    /* Demo card floating below hero */
+    .hero-demo {
+      margin-top: 4rem;
+      width: 100%;
+      max-width: 680px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      animation: fadeUp 0.7s 0.4s ease both;
+      position: relative;
+    }
+    .hero-demo::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    .demo-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+    }
+    .demo-bar i { color: var(--muted); }
+    .demo-bar input {
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      flex: 1;
+      pointer-events: none;
+    }
+    .demo-bar input::placeholder { color: var(--muted); }
+
+    .demo-result {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--accent-dim);
+      border: 1px solid rgba(0,229,255,0.2);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+    }
+    .demo-result .short-url {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      color: var(--accent);
+      font-size: 1rem;
+    }
+    .demo-result .copy-btn {
+      background: var(--accent);
+      color: var(--bg);
+      border: none;
+      padding: 0.3rem 0.8rem;
+      border-radius: 5px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* ─── STATS ─── */
+    .stats-section {
+      position: relative;
+      z-index: 1;
+      padding: 5rem 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .stat-card {
+      text-align: center;
+      padding: 2rem;
+    }
+    .stat-number {
+      font-family: 'Syne', sans-serif;
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -0.04em;
+      line-height: 1;
+    }
+    .stat-label {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-top: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* ─── FEATURES ─── */
+    .features-section {
+      position: relative;
+      z-index: 1;
+      padding: 5rem 1.5rem;
+    }
+
+    .section-label {
+      display: inline-block;
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem;
+      height: 100%;
+      transition: border-color 0.3s, transform 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card:hover {
+      border-color: rgba(0,229,255,0.3);
+      transform: translateY(-4px);
+    }
+    .feature-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .feature-card:hover::after { opacity: 1; }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(0,229,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+
+    .feature-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.6rem;
+      color: var(--text);
+    }
+    .feature-card p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.65;
+    }
+
+    /* ─── HOW IT WORKS ─── */
+    .how-section {
+      position: relative;
+      z-index: 1;
+      padding: 5rem 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .step {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--accent-dim);
+      border: 1px solid rgba(0,229,255,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      color: var(--accent);
+      font-size: 1rem;
+    }
+    .step-content h4 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.35rem;
+    }
+    .step-content p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    /* ─── CTA SECTION ─── */
+    .cta-section {
+      position: relative;
+      z-index: 1;
+      padding: 6rem 1.5rem;
+      text-align: center;
+    }
+
+    .cta-card {
+      max-width: 700px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 20%; right: 20%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+    .cta-card::after {
+      content: '';
+      position: absolute;
+      bottom: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(0,229,255,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      position: relative;
+      z-index: 1;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    footer span { color: var(--accent); font-family: 'Syne', sans-serif; font-weight: 700; }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Typing cursor effect on demo input */
+    .typing-text {
+      overflow: hidden;
+      white-space: nowrap;
+      animation: typing 3s steps(50) infinite alternate;
+    }
+    @keyframes typing {
+      0%   { width: 0 }
+      50%  { width: 100% }
+      100% { width: 100% }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="brand">Sn<span>i</span>p</div>
+  <div class="nav-links d-none d-md-flex align-items-center">
+    <a href="#features">Features</a>
+    <a href="#how">How it works</a>
+    <a href="/login">Log in</a>
+    <a href="/signup" class="btn-nav">Get Started</a>
+  </div>
+  <a href="/signup" class="btn-nav d-md-none">Start Free</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">
+    <i class="bi bi-stars"></i> AI-Powered Link Intelligence
+  </div>
+
+  <h1>
+    Your links,<br/>
+    <span class="highlight">Intelligently</span> short.
+  </h1>
+
+  <p>
+    Snip transforms long, unwieldy URLs into clean, shareable links — enriched with AI-generated titles and summaries, tracked in real time.
+  </p>
+
+  <div class="hero-cta">
+    <a href="/signup" class="btn-primary-custom">
+      <i class="bi bi-scissors"></i> Start Snipping Free
+    </a>
+    <a href="/login" class="btn-ghost">
+      <i class="bi bi-arrow-right"></i> Sign In
+    </a>
+  </div>
+
+  <div class="hero-demo">
+    <div class="demo-bar">
+      <i class="bi bi-link-45deg"></i>
+      <input type="text" value="https://www.example.com/this-is-a-very-long-url/that-nobody-wants-to-share" readonly class="typing-text">
+    </div>
+    <div class="demo-result">
+      <div>
+        <div class="short-url">snip.ly/xK9mP2</div>
+        <div style="color: var(--muted); font-size: 0.78rem; margin-top: 0.2rem;">AI Title: "The Ultimate Guide to..." • 142 clicks</div>
+      </div>
+      <button class="copy-btn" onclick="this.textContent='Copied!'">Copy</button>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="stats-section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-number">10M+</div><div class="stat-label">Links Created</div></div></div>
+      <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-number">99.9%</div><div class="stat-label">Uptime</div></div></div>
+      <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-number">&lt;50ms</div><div class="stat-label">Redirect Speed</div></div></div>
+      <div class="col-6 col-md-3"><div class="stat-card"><div class="stat-number">AI</div><div class="stat-label">Powered Metadata</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section" id="features">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="section-label">Why Snip?</span>
+      <h2 class="section-title">Built for the modern web</h2>
+      <p style="color: var(--muted); max-width: 480px; margin: 0 auto; font-size: 0.95rem; line-height: 1.7;">Every feature is purposeful — no bloat, just what you need to share links smarter.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-robot"></i></div>
+          <h3>AI Metadata</h3>
+          <p>Gemini AI automatically reads your destination page and generates a smart title and one-line summary — so you always know where your links lead.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-graph-up-arrow"></i></div>
+          <h3>Click Analytics</h3>
+          <p>Track every click with timestamps. See how your links perform over time with a clean, real-time analytics view from your dashboard.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-shield-lock"></i></div>
+          <h3>Secure Auth</h3>
+          <p>JWT-based authentication with bcrypt password hashing. Your account and links are yours — private and protected by default.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-lightning-charge"></i></div>
+          <h3>Instant Redirects</h3>
+          <p>Redirects happen in milliseconds. Snip is optimized for speed — your visitors never wait.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-clipboard2-check"></i></div>
+          <h3>One-Click Copy</h3>
+          <p>Every short URL comes with a copy button right on your dashboard. Share anywhere instantly — no fumbling with long URLs again.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature-card">
+          <div class="feature-icon"><i class="bi bi-person-check"></i></div>
+          <h3>Personal Dashboard</h3>
+          <p>All your links in one place. Manage, monitor, and review everything from a clean, minimal dashboard designed for clarity.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-5">
+        <span class="section-label">The Process</span>
+        <h2 class="section-title">Three steps. That's it.</h2>
+        <p style="color: var(--muted); line-height: 1.7; margin-bottom: 2rem; font-size: 0.95rem;">No complexity, no learning curve. Snip is designed to get out of your way.</p>
+      </div>
+      <div class="col-lg-7">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <h4>Paste your long URL</h4>
+            <p>Drop any link into the Snip dashboard. Works with any website — articles, products, docs, anything.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <h4>AI analyzes and enriches it</h4>
+            <p>Snip fetches the page, sends it to Gemini AI, and extracts a human-readable title and summary automatically.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <h4>Share your smart short link</h4>
+            <p>Copy your new Snip link and share it. Every click is logged with a timestamp — check analytics anytime.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-card">
+    <span class="section-label">Ready?</span>
+    <h2 class="section-title" style="font-size: 2.5rem; margin-bottom: 1rem;">Start snipping today.</h2>
+    <p style="color: var(--muted); margin-bottom: 2rem; font-size: 0.95rem;">Free to use. No credit card. Just smarter links.</p>
+    <a href="/signup" class="btn-primary-custom">
+      <i class="bi bi-scissors"></i> Create Your Account
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span>Snip</span> &nbsp;·&nbsp; Links, Refined. &nbsp;·&nbsp; Built with Express & Gemini AI
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

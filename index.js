@@ -16,18 +16,19 @@ const staticRouter = require("./routes/staticRouter")
 const userRoute = require("./routes/user")
 
 const app = express();
-const port = 8001;
+const port = process.env.PORT || 8001;
 
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
+app.use(checkAuth)
 
 //Routing
 app.use("/url",restrictToLoggedinUserOnly, urlRoutes)
 app.use("/user", userRoute)
-app.use("/",checkAuth, staticRouter)
+app.use("/", staticRouter)
 
 //EJS setup
 app.set("view engine", "ejs")
@@ -42,7 +43,8 @@ app.set("views", path.resolve("./views"))
 // })
 
 //MongoDB connection
-connectTOMongoDB("mongodb://localhost:27017/short-url")
+const mongoURI = process.env.MONGODB_URI || "mongodb://localhost:27017/short-url";
+connectTOMongoDB(mongoURI)
 .then(() => {
     console.log("Connected to MongoDB");
 })
@@ -53,17 +55,22 @@ connectTOMongoDB("mongodb://localhost:27017/short-url")
 
 
 app.get("/:shortId", async (req, res) => {
+    const shortId = req.params.shortId;
+    const entry = await URL.findOneAndUpdate(
+        { shortId },
+        {
+            $push: {
+                visitHistory: { timestamp: Date.now() },
+            },
+        }
+    );
 
-    const shortId = req.params.shortId
-    const entry=await URL.findOneAndUpdate({
-        shortId
-    }, {$push: {
-        
-        visitHistory: {timestamp: Date.now()}
-    }})
+    if (!entry) {
+        return res.status(404).send("Short URL not found");
+    }
 
-res.redirect(entry.redirectUrl)
-})
+    res.redirect(entry.redirectUrl);
+});
   
 
 // Start the server

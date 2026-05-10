@@ -4,14 +4,21 @@ const { setUser } = require("../service/auth");
 
 async function handleUserSignup(req, res) {
   const { name, email, password } = req.body;
-
-  await User.create({
-    name,
-    email,
-    password,
-  });
-
-  return res.render("home", { id: null });
+  try {
+    const user = await User.create({
+      name,
+      email,
+      password,
+    });
+    const token = setUser(user);
+    res.cookie("uid", token);
+    return res.redirect("/");
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.render("signup", { error: "Email already exists" });
+    }
+    return res.render("signup", { error: "Something went wrong" });
+  }
 }
 
 async function handleUserLogin(req, res) {
@@ -38,4 +45,9 @@ async function handleUserLogin(req, res) {
   return res.redirect("/");
 }
 
-module.exports = { handleUserSignup, handleUserLogin };
+async function handleUserLogout(req, res) {
+  res.clearCookie("uid");
+  return res.redirect("/");
+}
+
+module.exports = { handleUserSignup, handleUserLogin, handleUserLogout };

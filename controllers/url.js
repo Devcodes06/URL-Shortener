@@ -15,39 +15,59 @@ async function handleGenerateShortURL(req, res) {
   let summary = "No summary available.";
 
   try {
-    // Fetch website content (limit to first 5000 chars of HTML to avoid token limits)
-    const response = await axios.get(body.url, { timeout: 5000 });
-    const htmlSnippet = response.data.substring(0, 5000);
+    // 1. Fetch website content with User-Agent to avoid being blocked
+    const response = await axios.get(body.url, { 
+      timeout: 5000,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      }
+    });
+    
+    const html = response.data;
+    
+    // Fallback: Simple HTML Title Extraction
+    const titleMatch = html.match(/<title>(.*?)<\/title>/i);
+    if (titleMatch && titleMatch[1]) {
+      title = titleMatch[1].trim();
+    }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // 2. AI Analysis
+    const htmlSnippet = html.substring(0, 10000); // Increased snippet size slightly
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      generationConfig: { responseMimeType: "application/json" }
+    });
+
     const prompt = `
-      Analyze the following HTML snippet from a website and provide:
-      1. A catchy title for the page.
-      2. A concise 1-sentence summary of what the website is about.
+      Analyze the following HTML from a website and provide:
+      1. A catchy, human-readable title for the page (max 60 chars).
+      2. A concise 1-sentence summary of what the website is about (max 150 chars).
       
-      Return the result in JSON format like this:
+      Return ONLY a JSON object:
       {
-        "title": "Your Catchy Title",
-        "summary": "Your 1-sentence summary"
+        "title": "string",
+        "summary": "string"
       }
       
-      HTML Snippet:
+      HTML:
       ${htmlSnippet}
     `;
 
     const result = await model.generateContent(prompt);
     const aiResponse = result.response.text();
     
-    // Clean JSON response (remove markdown if present)
-    const jsonMatch = aiResponse.match(/\{.*\}/s);
-    if (jsonMatch) {
-      const data = JSON.parse(jsonMatch[0]);
-      title = data.title || title;
-      summary = data.summary || summary;
+    try {
+      const data = JSON.parse(aiResponse);
+      if (data.title) title = data.title;
+      if (data.summary) summary = data.summary;
+    } catch (parseError) {
+      console.error("AI JSON Parse Error:", parseError.message, "Response:", aiResponse);
+      // If JSON parse fails, check for fallback title already extracted
     }
+
   } catch (error) {
-    console.error("AI Generation Error:", error.message);
-    // Continue with default values if AI fails
+    console.error("URL Analysis Error:", error.message);
+    // Continue with default/fallback values
   }
 
   await URL.create({
@@ -65,10 +85,36 @@ async function handleGenerateShortURL(req, res) {
 async function handleGetAnalytics(req, res) {
   const shortId = req.params.shortId;
   const result = await URL.findOne({ shortId });
+  
+  if (!result) {
+    return res.status(404).json({ error: "URL not found" });
+  }
+
+  if (result.createdBy.toString() !== req.user._id.toString()) {
+    return res.status(403).json({ error: "Unauthorized" });
+  }
+
   return res.json({
     totalClicks: result.visitHistory.length,
     analytics: result.visitHistory,
   });
 }
 
-module.exports = { handleGenerateShortURL, handleGetAnalytics };
+async function handleDeleteURL(req, res) {
+  const shortId = req.params.shortId;
+  try {
+    const result = await URL.findOne({ shortId });
+    if (!result) return res.status(404).json({ error: "URL not found" });
+
+    if (result.createdBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    await URL.deleteOne({ shortId });
+    return res.json({ message: "URL deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ error: "Failed to delete URL" });
+  }
+}
+
+module.exports = { handleGenerateShortURL, handleGetAnalytics, handleDeleteURL };
