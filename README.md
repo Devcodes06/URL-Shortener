@@ -1,92 +1,91 @@
-# URL-Shortener
+# AI-Powered URL Shortener
 
-A simple URL shortening application built with Node.js, Express, MongoDB, and Mongoose, now powered by AI.
+A professional, feature-rich URL shortening application built with Node.js, Express, and MongoDB, featuring AI-generated summaries for every link.
 
-## Features
+## 🚀 Features
 
-- **AI-Powered Insights**: Automatically generates a catchy **Title** and a **1-sentence Summary** for every shortened URL using the **Gemini AI API**.
-- **Website Crawling**: Uses `axios` to fetch metadata from the target URL to provide context to the AI.
-- **User Authentication**: Secure Signup and Login using JWT (JSON Web Tokens).
-- **Seamless Flow**: Automatically logs users in immediately after a successful signup.
-- **Global Auth Middleware**: Robust session management using a global `checkAuth` middleware.
-- **Improved UI/UX**:
-    - Real-time error feedback on Login and Signup pages.
-    - Secure password masking (using `type="password"`).
-    - Responsive EJS templates.
-- **Password Security**: Passwords are hashed using `bcryptjs` before storage with modern Mongoose async hooks.
-- **Protected Routes**: Short URL generation and analytics are restricted to logged-in users.
-- **URL Shortening**: Create shortened URLs from long URLs.
-- **Analytics**: Track click analytics and visit history.
-- **Redirection**: Automatic redirect to original URL on access.
+- **AI-Powered Insights**: Automatically generates a catchy **Title** and a **1-sentence Summary** for every shortened URL using the **Gemini 1.5 Flash** model.
+- **Automated Metadata Extraction**: Crawls target websites using `axios` to provide context for AI analysis.
+- **Robust Authentication**: Secure User Signup and Login system using **JWT (JSON Web Tokens)** and **HttpOnly cookies**.
+- **Password Security**: Industry-standard password hashing using `bcryptjs` with Mongoose pre-save hooks.
+- **Comprehensive Analytics**: Track total clicks and detailed visit history for every shortened link.
+- **Clean Architecture**: Modular codebase following the Controller-Service-Repository pattern for scalability and maintainability.
+- **Modern UI**: Responsive EJS templates with real-time feedback and secure data handling.
 
-## Recent Improvements & Fixes
+## 🛠️ Tech Stack
 
-- **Mongoose Hook Fix**: Refactored the User model pre-save hook to use modern async/await patterns, resolving `next is not a function` errors.
-- **Global Auth state**: Implemented `checkAuth` as a global middleware to ensure consistent user state across all public and private routes.
-- **Error Handling**: Added server-side validation and error passing to EJS views to handle duplicate email registrations and invalid credentials gracefully.
-- **Security**: Upgraded password input fields from plain text to masked fields and synchronized bcrypt salt rounds for consistent hashing.
+- **Runtime**: Node.js
+- **Framework**: Express.js (v4.x)
+- **Database**: MongoDB with Mongoose ODM
+- **AI Engine**: Google Gemini API
+- **Authentication**: JWT & `cookie-parser`
+- **Security**: `bcryptjs`
+- **ID Generation**: `nanoid`
+- **View Engine**: EJS
 
-## Tech Stack
+## 📦 Installation & Setup
 
-- **AI Engine:** Google Gemini API (`@google/generative-ai`)
-- **Runtime:** Node.js
-- **Web Framework:** Express 5.x
-- **Template Engine:** EJS
-- **Database:** MongoDB with Mongoose ODM
-- **Security:** `bcryptjs` for hashing, `jsonwebtoken` for auth.
-- **Utilities:** `axios` for web fetching, `shortid` for ID generation, `dotenv` for environment management.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Devcodes06/URL-Shortener.git
+   cd URL-Shortener
+   ```
 
-## Installation
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-```bash
-# Install dependencies
-npm install
+3. **Configure Environment Variables**
+   Create a `.env` file in the root directory (refer to `.env.example`):
+   ```env
+   PORT=8001
+   MONGODB_URI=your_mongodb_connection_string
+   JWT_SECRET=your_jwt_secret
+   GEMINI_API_KEY=your_gemini_api_key
+   ```
+   *Get your Gemini API Key at [Google AI Studio](https://aistudio.google.com/)*
 
-# Set up environment variables
-cp .env.example .env
-# Edit .env and add your GEMINI_API_KEY from https://aistudio.google.com/
+4. **Start the application**
+   ```bash
+   # Development mode with nodemon
+   npm run dev
 
-# Start the development server
-npm start
-```
+   # Production mode
+   npm start
+   ```
 
-The server will run on `http://localhost:8001`
+The server will be running at `http://localhost:8001`
 
-## API & Authentication
-
-### Authentication Endpoints
-- `POST /user/signup`: Create a new account.
-- `POST /user/login`: Authenticate and receive a session cookie.
-
-### URL Endpoints (Require Authentication)
-- `POST /url`: Generate a shortened URL with AI-generated title and summary.
-- `GET /url/analytics/:shortId`: View click history.
-
-## Project Structure
+## 📂 Project Structure
 
 ```
-.
-├── index.js          # Main application entry point (loads dotenv)
-├── connect.js        # MongoDB connection utility
-├── controllers/
-│   ├── url.js        # URL business logic + Gemini AI Integration
-│   └── user.js       # Authentication logic (Signup/Login)
-├── middlewares/
-│   └── auth.js       # JWT & Route protection middleware
-├── models/
-│   ├── url.js        # URL Schema (includes title & summary)
-│   └── user.js       # User Schema with Bcrypt pre-save hook
-├── routes/
-│   ├── url.js        # Protected URL routes
-│   ├── user.js       # Auth routes
-│   └── staticRouter.js # View routes (handles query params for UI)
-├── service/
-│   └── auth.js       # JWT Sign/Verify service
-├── views/            # EJS templates with Title/Summary display
-├── .env.example      # Environment variable template
-├── package.json
-└── README.md
+├── config/           # Database and application configurations
+├── controllers/      # Request handlers and routing logic
+├── middlewares/      # Express middlewares (Auth, Error handling)
+├── models/           # Mongoose schemas and models
+├── routes/           # API and View route definitions
+├── services/         # Business logic (AI Analysis, Auth services)
+├── views/            # EJS templates for the frontend
+├── index.js          # Application entry point
+└── .env.example      # Environment variable template
 ```
 
-## Author
-Devcodes06
+## 🔐 API Reference
+
+### Authentication
+- `POST /user/signup`: Create a new user account
+- `POST /user/login`: Authenticate user and start session
+- `POST /user/logout`: Clear session cookies
+
+### URL Management (Requires Auth)
+- `POST /url`: Generate a short URL with AI analysis
+- `GET /url/analytics/:shortId`: Fetch click data and history
+- `DELETE /url/:shortId`: Delete a shortened URL
+
+## 📝 License
+This project is licensed under the MIT License.
+
+## 👤 Author
+**Devcodes06**
+- GitHub: [@Devcodes06](https://github.com/Devcodes06)

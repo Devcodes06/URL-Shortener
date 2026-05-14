@@ -1,27 +1,29 @@
 {
-  "name": "url_shortner",
+  "name": "url_shortener",
   "version": "1.0.0",
-  "description": "",
-  "license": "ISC",
+  "description": "A professional URL shortener with AI-powered summaries.",
+  "license": "MIT",
   "author": "",
   "type": "commonjs",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "node index.js",
+    "dev": "nodemon index.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
-    "axios": "^1.16.0",
-    "bcryptjs": "^3.0.3",
+    "axios": "^1.7.9",
+    "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
-    "dotenv": "^17.4.2",
-    "ejs": "^5.0.1",
-    "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3",
-    "mongoose": "^9.4.1",
-    "nanoid": "^5.1.7",
-    "nodemon": "^3.1.14",
-    "shortid": "^2.2.17",
-    "uuid": "^13.0.0"
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.5",
+    "nanoid": "^3.3.8",
+    "uuid": "^11.0.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
   }
 }

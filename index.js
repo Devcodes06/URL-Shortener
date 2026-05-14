@@ -1,79 +1,57 @@
 require('dotenv').config();
 const express = require('express');
-const path = require("path")
-const cookieParser = require("cookie-parser")
-const {restrictToLoggedinUserOnly,checkAuth} = require("./middlewares/auth")
+const path = require('path');
+const cookieParser = require('cookie-parser');
 
-//Model Connection
-const { connectTOMongoDB } = require("./connect");
+const { connectToMongoDB } = require('./config/db');
+const { restrictToLoggedinUserOnly, checkAuth } = require('./middlewares/auth');
+const { handleRedirect } = require('./controllers/redirect');
 
-//Models
-const URL = require("./models/url")
-
-//Routes
-const urlRoutes = require("./routes/url");
-const staticRouter = require("./routes/staticRouter")
-const userRoute = require("./routes/user")
+// Routes
+const urlRoutes = require('./routes/url');
+const staticRouter = require('./routes/staticRouter');
+const userRoute = require('./routes/user');
 
 const app = express();
-const port = process.env.PORT || 8001;
+const PORT = process.env.PORT || 8001;
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/short-url';
 
+// Database Connection
+connectToMongoDB(MONGODB_URI);
 
-// Middleware
+// View Engine Setup
+app.set('view engine', 'ejs');
+app.set('views', path.resolve('./views'));
+
+// Global Middlewares
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }))
-app.use(cookieParser())
-app.use(checkAuth)
+app.use(express.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(checkAuth);
 
-//Routing
-app.use("/url",restrictToLoggedinUserOnly, urlRoutes)
-app.use("/user", userRoute)
-app.use("/", staticRouter)
+// Static Files (if any)
+app.use(express.static(path.join(__dirname, 'public')));
 
-//EJS setup
-app.set("view engine", "ejs")
-app.set("views", path.resolve("./views"))
+// Routes
+app.use('/url', restrictToLoggedinUserOnly, urlRoutes);
+app.use('/user', userRoute);
+app.use('/', staticRouter);
 
+// Short ID Redirect Route
+app.get('/:shortId', handleRedirect);
 
-// app.get("/test", async (req,res) => {
-// const allUrls = await URL.find({})
-//     return res.render("home", {
-//         urls : allUrls
-//     })
-// })
-
-//MongoDB connection
-const mongoURI = process.env.MONGODB_URI || "mongodb://localhost:27017/short-url";
-connectTOMongoDB(mongoURI)
-.then(() => {
-    console.log("Connected to MongoDB");
-})
-.catch((err) => {
-    console.log("Error connecting to MongoDB", err);
+// 404 Handler
+app.use((req, res) => {
+  res.status(404).render('home', { error: 'Page not found' });
 });
 
-
-
-app.get("/:shortId", async (req, res) => {
-    const shortId = req.params.shortId;
-    const entry = await URL.findOneAndUpdate(
-        { shortId },
-        {
-            $push: {
-                visitHistory: { timestamp: Date.now() },
-            },
-        }
-    );
-
-    if (!entry) {
-        return res.status(404).send("Short URL not found");
-    }
-
-    res.redirect(entry.redirectUrl);
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something went wrong!');
 });
-  
 
-// Start the server
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
+// Server Start
+app.listen(PORT, () => {
+  console.log(`Server started at http://localhost:${PORT}`);
 });

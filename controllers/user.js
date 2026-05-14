@@ -1,6 +1,6 @@
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
-const { setUser } = require("../service/auth");
+const { setUser } = require("../services/auth");
 
 async function handleUserSignup(req, res) {
   const { name, email, password } = req.body;
