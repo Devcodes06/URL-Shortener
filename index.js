@@ -14,14 +14,9 @@ const userRoute = require('./routes/user');
 
 const app = express();
 const PORT = process.env.PORT || 8001;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/short-url';
-
-// Database Connection
-connectToMongoDB(MONGODB_URI);
-
 // View Engine Setup
 app.set('view engine', 'ejs');
-app.set('views', path.resolve('./views'));
+app.set('views', path.join(__dirname, 'views'));
 
 // Global Middlewares
 app.use(express.json());
@@ -31,6 +26,17 @@ app.use(checkAuth);
 
 // Static Files (if any)
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Database Connection Middleware
+app.use(async (req, res, next) => {
+  if (req.path === '/healthz') return next();
+  try {
+    await connectToMongoDB();
+    next();
+  } catch (err) {
+    next(err);
+  }
+});
 
 // Routes
 app.use('/url', restrictToLoggedinUserOnly, urlRoutes);
@@ -42,16 +48,23 @@ app.get('/:shortId', handleRedirect);
 
 // 404 Handler
 app.use((req, res) => {
-  res.status(404).render('home', { error: 'Page not found' });
+  res.status(404).send('Page not found');
 });
 
 // Global Error Handler
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something went wrong!');
+  console.error(`Unhandled Error [${err.name}]: ${err.message}`, err.stack);
+  const responseMessage = process.env.NODE_ENV === 'production'
+    ? 'Something went wrong!'
+    : `Something went wrong: ${err.message}`;
+  res.status(500).send(responseMessage);
 });
 
 // Server Start
-app.listen(PORT, () => {
-  console.log(`Server started at http://localhost:${PORT}`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Server started at http://localhost:${PORT}`);
+  });
+}
+
+module.exports = app;
