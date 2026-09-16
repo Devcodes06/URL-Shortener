@@ -3,7 +3,7 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 
-const { connectToMongoDB } = require('./config/db');
+const { connectToMongoDB, getConnection } = require('./config/db');
 const { restrictToLoggedinUserOnly, checkAuth } = require('./middlewares/auth');
 const { handleRedirect } = require('./controllers/redirect');
 
@@ -42,6 +42,19 @@ app.use(async (req, res, next) => {
 app.use('/url', restrictToLoggedinUserOnly, urlRoutes);
 app.use('/user', userRoute);
 app.use('/', staticRouter);
+
+// Health Check Endpoint
+app.get('/healthz', (req, res) => {
+  const readyState = getConnection().readyState;
+  res.json({
+    ok: readyState === 1,
+    mongooseReadyState: readyState,
+    hasMongoUri: Boolean(process.env.MONGODB_URI),
+    hasJwtSecret: Boolean(process.env.JWT_SECRET),
+    hasGeminiKey: Boolean(process.env.GEMINI_API_KEY),
+    node: process.version,
+  });
+});
 
 // Short ID Redirect Route
 app.get('/:shortId', handleRedirect);
