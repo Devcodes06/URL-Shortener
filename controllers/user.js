@@ -70,7 +70,8 @@ async function handleUserLogin(req, res) {
 }
 
 async function handleUserLogout(req, res) {
-  res.clearCookie("uid", COOKIE_OPTIONS);
+  const { maxAge, ...clearOptions } = COOKIE_OPTIONS;
+  res.clearCookie("uid", clearOptions);
   return res.redirect("/");
 }
 
